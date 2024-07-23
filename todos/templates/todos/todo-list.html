@@ -9,7 +9,7 @@
         <dialog id="todo_create" class="modal modal-bottom sm:modal-middle">
             <div class="modal-box">
                 <h3 class="text-lg font-bold">Create Todo</h3>
-                <form hx-trigger="submit" hx-target="#todos" hx-swap="beforeend" hx-post="create/"
+                <form hx-on::after-request="this.reset(); todo_create.close();" hx-trigger="submit" hx-target="#todos" hx-swap="beforeend" hx-post="create/"
                       class="w-full flex flex-col gap-4 mt-4">
                     {% render_field form.title class+="input input-bordered w-full" placeholder="Title" %}
                     {% render_field form.description class+="textarea textarea-bordered w-full" placeholder="Description" %}
@@ -48,7 +48,28 @@
                             <td>{{ todo.title }}</td>
                             <td>{{ todo.description }}</td>
                             <td>{{ todo.done }}</td>
-                            <td></td>
+                            <td class="flex gap-2">
+                                <button
+                                    class="btn btn-sm btn-error"
+                                    hx-delete="{% url 'todos:todo-delete' todo.id %}"
+                                    hx-on:todo-delete="this.closest('tr').remove()"
+                                >DELETE</button>
+                                {% if todo.done %}
+                                    <button
+                                        class="btn btn-sm btn-success"
+                                        hx-post="{% url 'todos:todo-done-undone' todo.id %}"
+                                        hx-target="closest tr"
+                                        hx-swap="outerHTML"
+                                    >UNDONE</button>
+                                {% else %}
+                                    <button
+                                        class="btn btn-sm btn-success"
+                                        hx-post="{% url 'todos:todo-done-undone' todo.id %}"
+                                        hx-target="closest tr"
+                                        hx-swap="outerHTML"
+                                    >DONE</button>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endpartialdef %}
                 {% endfor %}
