@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load partials %}
+{% load widget_tweaks %}
+
+{% block title %}Todo List{% endblock title %}
+{% block content %}
+    <section class="container mx-auto">
+        <button class="btn w-full my-2" onclick="todo_create.showModal()">Create Todo</button>
+        <dialog id="todo_create" class="modal modal-bottom sm:modal-middle">
+            <div class="modal-box">
+                <h3 class="text-lg font-bold">Create Todo</h3>
+                <form hx-trigger="submit" hx-target="#todos" hx-swap="beforeend" hx-post="create/"
+                      class="w-full flex flex-col gap-4 mt-4">
+                    {% render_field form.title class+="input input-bordered w-full" placeholder="Title" %}
+                    {% render_field form.description class+="textarea textarea-bordered w-full" placeholder="Description" %}
+                    <div class="form-control">
+                        <label class="label cursor-pointer">
+                            <span class="label-text">Task is done</span>
+                            {% render_field form.done class+="checkbox" %}
+                        </label>
+                    </div>
+                    <div class="modal-action">
+                        <div class="flex gap-2">
+                            <button class="btn btn-error" type="button" onclick="todo_create.close()">Close</button>
+                            <button class="btn btn-success" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+        <div class="overflow-x-auto">
+            <table class="table table-zebra">
+                <!-- head -->
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>TITLE</th>
+                    <th>DESCRIPTION</th>
+                    <th>IS DONE</th>
+                    <th>ACTIONS</th>
+                </tr>
+                </thead>
+                <tbody id="todos">
+                {% for todo in todos %}
+                    {% partialdef todo-list-item inline=True %}
+                        <tr>
+                            <th>{{ todo.id }}</th>
+                            <td>{{ todo.title }}</td>
+                            <td>{{ todo.description }}</td>
+                            <td>{{ todo.done }}</td>
+                            <td></td>
+                        </tr>
+                    {% endpartialdef %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock content %}
